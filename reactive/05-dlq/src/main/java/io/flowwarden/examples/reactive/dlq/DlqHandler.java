@@ -12,6 +12,7 @@ package io.flowwarden.examples.reactive.dlq;
 import io.flowwarden.examples.common.model.Order;
 import io.flowwarden.stream.annotation.ChangeStream;
 import io.flowwarden.stream.annotation.DeadLetterQueue;
+import io.flowwarden.stream.annotation.MongoDlqOptions;
 import io.flowwarden.stream.annotation.OnInsert;
 import io.flowwarden.stream.annotation.RetryPolicy;
 import java.util.concurrent.atomic.AtomicLong;
@@ -24,10 +25,10 @@ import reactor.core.publisher.Mono;
  *
  * <p>Failure is signalled via {@code Mono.error(...)}, but the
  * downstream behaviour is identical: {@code @RetryPolicy} retries
- * twice, then {@code @DeadLetterQueue} archives the offending event.
- * See the imperative twin for the per-attribute audit of which
- * {@code @DeadLetterQueue} fields are honoured / ignored / partial in
- * {@code stream-core:1.0.0-rc.1}.</p>
+ * twice, then {@code @DeadLetterQueue} + {@code @MongoDlqOptions}
+ * archive the offending event into the custom {@code orders-dlq-failed}
+ * collection. See the imperative twin for the policy / routing split
+ * rationale.</p>
  */
 @ChangeStream(collection = "orders-dlq", documentType = Order.class)
 @RetryPolicy(
@@ -37,11 +38,11 @@ import reactor.core.publisher.Mono;
         retryOn = PaymentRejectedException.class
 )
 @DeadLetterQueue(
-        collection = "orders-dlq-failed",
-        ttlDays = 7,
+        retentionDays = 7,
         includeOriginalDocument = true,
         includeStackTrace = true
 )
+@MongoDlqOptions(collection = "orders-dlq-failed")
 public class DlqHandler {
 
     private static final Logger log = LoggerFactory.getLogger(DlqHandler.class);

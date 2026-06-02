@@ -11,6 +11,7 @@ package io.flowwarden.examples.reactive.checkpoint;
 
 import io.flowwarden.examples.common.model.Order;
 import io.flowwarden.stream.OnHistoryLost;
+import io.flowwarden.stream.ResumeStrategy;
 import io.flowwarden.stream.StartPosition;
 import io.flowwarden.stream.annotation.ChangeStream;
 import io.flowwarden.stream.annotation.Checkpoint;
@@ -22,15 +23,17 @@ import reactor.core.publisher.Mono;
 
 /**
  * Reactive twin of {@code imperative/06-checkpoint}. Same checkpoint
- * settings, same {@code _fw_checkpoints/checkpoint-handler} document
- * — only the handler return type changes to {@link Mono}.
+ * settings (including {@code resumeStrategy = PROCESSED_FIRST}), same
+ * {@code _fw_checkpoints/checkpoint-handler} document — only the
+ * handler return type changes to {@link Mono}.
  */
 @ChangeStream(collection = "orders-checkpoint", documentType = Order.class)
 @Checkpoint(
         saveEveryN = 1,
         saveIntervalSeconds = 3,
         startPosition = StartPosition.RESUME,
-        onHistoryLost = OnHistoryLost.RESUME_FROM_NOW
+        onHistoryLost = OnHistoryLost.RESUME_FROM_NOW,
+        resumeStrategy = ResumeStrategy.PROCESSED_FIRST
 )
 public class CheckpointHandler {
 

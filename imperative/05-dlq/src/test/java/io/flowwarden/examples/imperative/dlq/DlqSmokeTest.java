@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Query;
 import org.testcontainers.containers.MongoDBContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -42,21 +43,14 @@ class DlqSmokeTest {
         await().atMost(60, SECONDS).until(() -> handler.getSuccesses() > 0);
 
         // After exhaustion of the 2 retry attempts on a big-total order,
-        // FlowWarden writes one document into the DLQ collection. The
-        // collection is the hardcoded `_fw_dlq` in stream-core 1.0.0-rc.1
-        // (see DlqController Javadoc).
-        org.springframework.data.mongodb.core.query.Query streamQuery =
-                org.springframework.data.mongodb.core.query.Query.query(
-                        org.springframework.data.mongodb.core.query.Criteria
-                                .where("streamName").is(DlqController.STREAM_NAME));
-
+        // FlowWarden writes one document into the custom DLQ collection
+        // declared on @MongoDlqOptions(collection = "orders-dlq-failed").
         await().atMost(90, SECONDS).until(() ->
-                mongoTemplate.count(streamQuery, DlqController.DLQ_COLLECTION) > 0);
+                mongoTemplate.count(new Query(), DlqController.DLQ_COLLECTION) > 0);
 
-        long dlqSize = mongoTemplate.count(streamQuery, DlqController.DLQ_COLLECTION);
+        long dlqSize = mongoTemplate.count(new Query(), DlqController.DLQ_COLLECTION);
         assertThat(dlqSize)
-                .as("exhausted retries should be written to %s for stream '%s'",
-                        DlqController.DLQ_COLLECTION, DlqController.STREAM_NAME)
+                .as("exhausted retries should be written to %s", DlqController.DLQ_COLLECTION)
                 .isPositive();
     }
 }

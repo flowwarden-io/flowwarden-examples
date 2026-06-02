@@ -41,19 +41,14 @@ class DlqSmokeTest {
     void exhaustedRetriesLandInDlqCollection() {
         await().atMost(60, SECONDS).until(() -> handler.getSuccesses() > 0);
 
-        Query streamQuery = Query.query(
-                org.springframework.data.mongodb.core.query.Criteria
-                        .where("streamName").is(DlqController.STREAM_NAME));
-
         await().atMost(90, SECONDS).until(() -> Boolean.TRUE.equals(
-                mongoTemplate.count(streamQuery, DlqController.DLQ_COLLECTION)
+                mongoTemplate.count(new Query(), DlqController.DLQ_COLLECTION)
                         .map(n -> n > 0)
                         .block()));
 
-        long dlqSize = mongoTemplate.count(streamQuery, DlqController.DLQ_COLLECTION).block();
+        long dlqSize = mongoTemplate.count(new Query(), DlqController.DLQ_COLLECTION).block();
         assertThat(dlqSize)
-                .as("exhausted retries should be written to %s for stream '%s'",
-                        DlqController.DLQ_COLLECTION, DlqController.STREAM_NAME)
+                .as("exhausted retries should be written to %s", DlqController.DLQ_COLLECTION)
                 .isPositive();
     }
 }

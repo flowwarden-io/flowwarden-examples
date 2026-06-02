@@ -13,7 +13,6 @@ import java.util.Map;
 import org.bson.Document;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,17 +21,16 @@ import reactor.core.publisher.Flux;
 /**
  * Browsable view of the DLQ collection — reactive variant returning a
  * {@link Flux} of {@link Map} entries. See the imperative twin's
- * Javadoc for the {@code stream-core:1.0.0-rc.1} wart on the
- * hardcoded {@code _fw_dlq} collection name.
+ * Javadoc for the policy / routing split rationale.
  */
 @RestController
 public class DlqController {
 
-    /** Hardcoded DLQ collection of stream-core 1.0.0-rc.1. */
-    static final String DLQ_COLLECTION = "_fw_dlq";
-
-    /** Auto-generated stream name (kebab-case of the handler class). */
-    static final String STREAM_NAME = "dlq-handler";
+    /**
+     * Custom DLQ collection declared on {@link DlqHandler} via
+     * {@code @MongoDlqOptions(collection = ...)}.
+     */
+    static final String DLQ_COLLECTION = "orders-dlq-failed";
 
     private final ReactiveMongoTemplate mongoTemplate;
 
@@ -42,7 +40,7 @@ public class DlqController {
 
     @GetMapping("/dlq")
     public Flux<Map<String, Object>> listDlq() {
-        Query query = Query.query(Criteria.where("streamName").is(STREAM_NAME))
+        Query query = new Query()
                 .with(Sort.by(Sort.Direction.DESC, "_id"))
                 .limit(50);
         return mongoTemplate.find(query, Document.class, DLQ_COLLECTION)

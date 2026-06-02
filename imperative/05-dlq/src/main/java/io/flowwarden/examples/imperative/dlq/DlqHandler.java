@@ -12,6 +12,7 @@ package io.flowwarden.examples.imperative.dlq;
 import io.flowwarden.examples.common.model.Order;
 import io.flowwarden.stream.annotation.ChangeStream;
 import io.flowwarden.stream.annotation.DeadLetterQueue;
+import io.flowwarden.stream.annotation.MongoDlqOptions;
 import io.flowwarden.stream.annotation.OnInsert;
 import io.flowwarden.stream.annotation.RetryPolicy;
 import java.util.concurrent.atomic.AtomicLong;
@@ -30,8 +31,16 @@ import org.slf4j.LoggerFactory;
  *
  * <p>The DLQ entry includes the original document and (by default) the
  * full stack trace, so a human can later inspect why a given order
- * could not be processed. A TTL index on {@code ttlDays} guarantees
- * that the DLQ doesn't grow forever.</p>
+ * could not be processed. A TTL index on {@code retentionDays}
+ * guarantees that the DLQ doesn't grow forever.</p>
+ *
+ * <p>{@link DeadLetterQueue} carries the backend-agnostic policy
+ * ({@code retentionDays}, {@code includeOriginalDocument},
+ * {@code includeStackTrace}). The companion {@link MongoDlqOptions}
+ * carries the Mongo-specific routing ({@code collection}) — split so
+ * that future non-Mongo DLQ backends (Kafka, RabbitMQ, JDBC) can
+ * declare their own options annotation without bloating
+ * {@code @DeadLetterQueue}.</p>
  *
  * <p>The companion {@code DlqController} (REST endpoint
  * {@code GET /dlq}) lets you read the collection from a browser
@@ -40,25 +49,6 @@ import org.slf4j.LoggerFactory;
  * <p>{@code @DeadLetterQueue} also works <em>without</em>
  * {@code @RetryPolicy}: the event then lands in the DLQ on the very
  * first failure.</p>
- *
- * <p><b>Known warts in {@code flowwarden-stream-core:1.0.0-rc.1}:</b></p>
- * <ul>
- *   <li>{@code collection} — <b>ignored</b>. Every failed event lands
- *       in the hardcoded {@code _fw_dlq} collection regardless. Pin to
- *       {@code _fw_dlq} when querying the DLQ yourself for now (see
- *       {@code DlqController}).</li>
- *   <li>{@code ttlDays} — <b>partial</b>. The {@code expiresAt} field
- *       is computed and written on each DLQ document, but no TTL index
- *       is created on the collection, so entries accumulate
- *       indefinitely. Create the TTL index by hand if you need
- *       automatic cleanup.</li>
- *   <li>{@code enabled}, {@code includeOriginalDocument},
- *       {@code includeStackTrace} — <b>honoured</b>. The attributes
- *       declared below take effect.</li>
- * </ul>
- *
- * <p>The {@code collection} and {@code ttlDays} attributes are kept on
- * the annotation as forward-compatible declaration of intent.</p>
  */
 @ChangeStream(collection = "orders-dlq", documentType = Order.class)
 @RetryPolicy(
@@ -68,11 +58,11 @@ import org.slf4j.LoggerFactory;
         retryOn = PaymentRejectedException.class
 )
 @DeadLetterQueue(
-        collection = "orders-dlq-failed",
-        ttlDays = 7,
+        retentionDays = 7,
         includeOriginalDocument = true,
         includeStackTrace = true
 )
+@MongoDlqOptions(collection = "orders-dlq-failed")
 public class DlqHandler {
 
     private static final Logger log = LoggerFactory.getLogger(DlqHandler.class);

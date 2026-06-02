@@ -36,7 +36,10 @@ import org.slf4j.LoggerFactory;
  * operations have a dedicated handler, so {@code any()} stays at zero —
  * remove one of the specific methods and you'll see {@code @OnChange}
  * pick up the slack. Useful when you don't care about the operation
- * type, or for handling future operations the lib doesn't yet model.</p>
+ * type, or for handling future operations the lib doesn't yet model.
+ * (In {@code stream-core 1.0.0-rc.2}, {@code @OnChange} was simplified
+ * to an attribute-less annotation — the {@code operationTypes} filter
+ * of rc.1 has been removed in favour of this pure catch-all model.)</p>
  *
  * <p>For {@link OnDelete}, the POJO form is not usable because
  * MongoDB only forwards the document {@code _id} on a delete event —

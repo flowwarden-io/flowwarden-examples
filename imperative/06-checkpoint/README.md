@@ -12,6 +12,13 @@ without losing events.
   token (3-level cascade documented in the lib Javadoc)
 - `onHistoryLost = RESUME_FROM_NOW` — pragmatic fallback if both tokens
   have rolled off the oplog (default would be `FAIL`)
+- `resumeStrategy = PROCESSED_FIRST` — the default (introduced in
+  `stream-core 1.0.0-rc.2`). Cascade starts from the last *processed*
+  token, giving strict at-least-once: in-flight events not yet
+  acknowledged at crash time are replayed. Switch to `SEEN_FIRST` for
+  fast restart on low-volume or heavily-filtered streams — cascade
+  then starts from the heartbeat-fresh seen token at the cost of
+  dropping in-flight events
 
 Tokens are stored in the `_fw_checkpoints` collection, keyed by stream
 name (here: `checkpoint-handler`).

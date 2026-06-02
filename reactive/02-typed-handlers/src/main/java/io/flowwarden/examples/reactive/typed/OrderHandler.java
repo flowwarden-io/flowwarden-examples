@@ -33,7 +33,10 @@ import reactor.core.publisher.Mono;
  *
  * <p>{@link OnChange} is the catch-all: it fires only for operations
  * that have no specific handler on this class. In this sample it stays
- * at zero, since the four specific handlers cover everything.</p>
+ * at zero, since the four specific handlers cover everything. (In
+ * {@code stream-core 1.0.0-rc.2}, the rc.1 {@code operationTypes}
+ * attribute was removed — {@code @OnChange} is now attribute-less and
+ * acts as a pure catch-all.)</p>
  */
 @ChangeStream(collection = "orders-typed", documentType = Order.class)
 public class OrderHandler {
