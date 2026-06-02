@@ -1,0 +1,33 @@
+server:
+  port: 0                    # random port — start as many samples as you want in parallel
+
+spring:
+  application:
+    name: example-reactive-01-hello-world
+  data:
+    mongodb:
+      uri: ${MONGO_URI:mongodb://localhost:27017/flowwarden-examples?replicaSet=rs0}
+
+flowwarden:
+  default-mode: reactive
+
+examples:
+  data-generator:
+    enabled: true
+    mode: reactive             # uses ReactiveMongoTemplate to write
+    collection: orders-hello
+    rates:
+      inserts-per-second: 1
+      updates-per-second: 0
+      deletes-per-second: 0
+      replaces-per-second: 0
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+logging:
+  level:
+    io.flowwarden.examples: INFO
