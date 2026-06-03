@@ -1,0 +1,40 @@
+server:
+  port: 0
+
+spring:
+  application:
+    name: example-imperative-09-full-stack
+  data:
+    mongodb:
+      uri: ${MONGO_URI:mongodb://localhost:27017/flowwarden-examples?replicaSet=rs0}
+
+flowwarden:
+  default-mode: imperative
+
+examples:
+  data-generator:
+    enabled: true
+    mode: imperative
+    collection: orders-full
+    # 5 inserts + 2 updates + 1 replace per second. Statuses are picked
+    # uniformly from {PENDING, CONFIRMED, CANCELLED}, so ~2/3 of inserts
+    # are rejected client-side by @Filter, and totals are uniform over
+    # [5, 2000] so ~2% are also rejected server-side by @Pipeline.
+    # Combined: dual-token divergence is observable within seconds.
+    # Deletes are off (lib forbids @Filter + @OnDelete on the same class;
+    # see FullStackHandler Javadoc).
+    rates:
+      inserts-per-second: 5
+      updates-per-second: 2
+      deletes-per-second: 0
+      replaces-per-second: 1
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+logging:
+  level:
+    io.flowwarden.examples: INFO

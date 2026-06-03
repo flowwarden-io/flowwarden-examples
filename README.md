@@ -40,13 +40,15 @@ flowwarden-examples/
 | Annotation | Sample | Status |
 |---|---|---|
 | `@EnableFlowWarden`, `@ChangeStream`, `@OnInsert` | `01-hello-world` | available |
-| `@OnInsert`, `@OnUpdate`, `@OnDelete`, `@OnReplace`, `@OnChange` | `02-typed-handlers` | planned |
-| `@OnError` | `03-error-handling` | planned |
-| `@RetryPolicy` | `04-retry-policy` | planned |
-| `@DeadLetterQueue` | `05-dlq` | planned |
-| `@Checkpoint` | `06-checkpoint` | planned |
-| `@Pipeline` | `07-pipeline` | planned |
-| `@Filter` | `08-filter` | planned |
+| `@OnInsert`, `@OnUpdate`, `@OnDelete`, `@OnReplace`, `@OnChange` | `02-typed-handlers` | available |
+| `@OnError` | `03-error-handling` | available |
+| `@RetryPolicy` | `04-retry-policy` | available |
+| `@DeadLetterQueue`, `@MongoDlqOptions` | `05-dlq` | available |
+| `@Checkpoint`, `ResumeStrategy` | `06-checkpoint` | available |
+| `@Pipeline` | `07-pipeline` | available |
+| `@Filter` | `08-filter` | available |
+| **every major annotation + dual-token divergence demo** | `09-full-stack` | available |
+| `TransactionInfo` — group events by `lsid`/`txnNumber` | `10-transactions` | available |
 
 Each available sample exists in two flavours: `imperative/<name>` and
 `reactive/<name>`. Pick the one that matches your stack — they are

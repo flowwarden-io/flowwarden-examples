@@ -23,5 +23,7 @@
         <module>06-checkpoint</module>
         <module>07-pipeline</module>
         <module>08-filter</module>
+        <module>09-full-stack</module>
+        <module>10-transactions</module>
     </modules>
 </project>
