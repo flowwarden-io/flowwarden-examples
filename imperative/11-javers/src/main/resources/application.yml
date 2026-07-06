@@ -1,0 +1,34 @@
+server:
+  port: 0                    # random port — start as many samples as you want in parallel
+
+spring:
+  application:
+    name: example-imperative-11-javers
+  data:
+    mongodb:
+      uri: ${MONGO_URI:mongodb://localhost:27017/flowwarden-examples?replicaSet=rs0}
+
+flowwarden:
+  default-mode: imperative
+
+javers:
+  # explicit — also the default. @JaversStream will resolve to this value.
+  snapshotCollectionName: jv_snapshots
+
+examples:
+  data-generator:
+    # The shared generator writes via MongoTemplate, which bypasses
+    # Spring Data repositories and therefore doesn't trigger Javers
+    # audit. This sample drives audit events through AuditedOrderWriter
+    # (which calls OrderRepository.save / deleteById) instead.
+    enabled: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+logging:
+  level:
+    io.flowwarden.examples: INFO
