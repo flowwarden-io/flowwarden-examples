@@ -49,10 +49,14 @@ flowwarden-examples/
 | `@Filter` | `08-filter` | available |
 | **every major annotation + dual-token divergence demo** | `09-full-stack` | available |
 | `TransactionInfo` — group events by `lsid`/`txnNumber` | `10-transactions` | available |
+| `@JaversStream`, `@OnInitial`, `@OnUpdate`, `@OnTerminal` (flowwarden-javers) | `11-javers` | available (imperative only) |
 
 Each available sample exists in two flavours: `imperative/<name>` and
 `reactive/<name>`. Pick the one that matches your stack — they are
 deliberately mirrored so you can compare them side by side.
+
+Sample `11-javers` is imperative-only — Javers' MongoDB Spring Boot
+starter is synchronous and has no reactive equivalent.
 
 ## Imperative vs reactive
 

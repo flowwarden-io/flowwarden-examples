@@ -23,7 +23,9 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <spring-boot.version>3.5.10</spring-boot.version>
-        <flowwarden.version>1.0.0-rc.2</flowwarden.version>
+        <flowwarden.version>1.0.0-rc.3</flowwarden.version>
+        <flowwarden-javers.version>1.0.0-rc.1</flowwarden-javers.version>
+        <javers.version>7.7.0</javers.version>
         <testcontainers.version>1.20.4</testcontainers.version>
         <awaitility.version>4.2.2</awaitility.version>
     </properties>
@@ -54,8 +56,22 @@
 
             <dependency>
                 <groupId>io.flowwarden</groupId>
-                <artifactId>flowwarden-stream-core</artifactId>
+                <artifactId>flowwarden-bom</artifactId>
                 <version>${flowwarden.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>io.flowwarden</groupId>
+                <artifactId>flowwarden-javers</artifactId>
+                <version>${flowwarden-javers.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.javers</groupId>
+                <artifactId>javers-spring-boot-starter-mongo</artifactId>
+                <version>${javers.version}</version>
             </dependency>
 
             <dependency>

@@ -12,6 +12,7 @@ package io.flowwarden.examples.common.model;
 import java.time.Instant;
 import java.util.UUID;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 /**
  * Single shared POJO used across all examples.
@@ -24,8 +25,12 @@ import org.springframework.data.annotation.Id;
  *
  * <p>The collection name is sample-specific (e.g. {@code orders-hello},
  * {@code orders-typed}) so several examples can run in parallel without
- * stepping on each other.</p>
+ * stepping on each other. Samples that write through {@code MongoTemplate}
+ * pass the collection explicitly, so the {@link Document#collection()}
+ * default below is only used by samples that rely on Spring Data
+ * repositories (e.g. {@code 11-javers}).</p>
  */
+@Document(collection = "orders-javers")
 public class Order {
 
     @Id
