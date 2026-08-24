@@ -18,6 +18,13 @@ jobs:
           distribution: temurin
           java-version: "17"
           cache: maven
+          # Read access to stream-core SNAPSHOTs on GitHub Packages (Maven
+          # requires authentication even for public packages).
+          server-id: github
+          server-username: GITHUB_ACTOR
+          server-password: GITHUB_TOKEN
 
       - name: Build and test
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         run: ./mvnw -B verify
