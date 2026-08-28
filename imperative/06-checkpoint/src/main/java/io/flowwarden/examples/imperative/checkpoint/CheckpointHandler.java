@@ -11,7 +11,6 @@ package io.flowwarden.examples.imperative.checkpoint;
 
 import io.flowwarden.examples.common.model.Order;
 import io.flowwarden.stream.OnHistoryLost;
-import io.flowwarden.stream.ResumeStrategy;
 import io.flowwarden.stream.StartPosition;
 import io.flowwarden.stream.annotation.ChangeStream;
 import io.flowwarden.stream.annotation.Checkpoint;
@@ -29,21 +28,23 @@ import org.slf4j.LoggerFactory;
  * replays from that token — no events skipped, no events lost (modulo
  * the dual-token cascade detailed on the annotation itself).</p>
  *
- * <p>{@code saveEveryN = 1} writes after every successful handler;
- * {@code saveIntervalSeconds = 3} runs a heartbeat that advances the
- * "last seen" token even when the handler is idle. {@code RESUME_FROM_NOW}
- * is a pragmatic fallback when the oplog has rolled over both tokens
- * (rather than {@code FAIL}, which would refuse to start).</p>
- *
- * <p>{@code resumeStrategy = PROCESSED_FIRST} (the default) gives strict
- * at-least-once: on restart the cascade starts from the last
- * <em>processed</em> token, replaying in-flight events that were not
- * yet acknowledged at crash time. Switch to
- * {@link ResumeStrategy#SEEN_FIRST} for fast restart on low-volume or
- * heavily-filtered streams — the cascade then starts from the
- * heartbeat-fresh seen token, at the cost of dropping in-flight events.
- * {@code lastProcessedToken} remains the cascade fallback in either
- * mode before {@code onHistoryLost} kicks in.</p>
+ * <p>{@code lastProcessedToken} is persisted by a count-or-time policy,
+ * whichever threshold is reached first: {@code saveEveryN = 1} writes at
+ * every terminally settled event, {@code saveIntervalSeconds = 3} bounds
+ * the age of a dirty anchor in time (a clean anchor is never rewritten).
+ * Keeping an <em>idle</em> stream recoverable is the separate job of
+ * {@code idleHeartbeatIntervalSeconds} — the sole writer of
+ * {@code lastSeenToken}: when the cursor has settled nothing for that
+ * long, a bounded server probe certifies the interval empty and persists
+ * the certified position, so an idle stream never loses its resume point
+ * to oplog rollover. It is on by default (300s); the sample pins a short
+ * value so the effect is visible — set {@code 0} to opt out (and
+ * re-expose the stream to rollover). On restart the cascade is fixed:
+ * the processed anchor first (strict at-least-once), the certified seen
+ * position as the safety net, then {@code onHistoryLost}.
+ * {@code RESUME_FROM_NOW} is a pragmatic fallback when the oplog has
+ * rolled over both anchors anyway (rather than {@code FAIL}, which would
+ * refuse to start).</p>
  *
  * <p>Restart demo (manual): run the app, watch a few inserts arrive,
  * Ctrl-C, then re-run. The handler picks up where it left off rather
@@ -53,9 +54,9 @@ import org.slf4j.LoggerFactory;
 @Checkpoint(
         saveEveryN = 1,
         saveIntervalSeconds = 3,
+        idleHeartbeatIntervalSeconds = 30,
         startPosition = StartPosition.RESUME,
-        onHistoryLost = OnHistoryLost.RESUME_FROM_NOW,
-        resumeStrategy = ResumeStrategy.PROCESSED_FIRST
+        onHistoryLost = OnHistoryLost.RESUME_FROM_NOW
 )
 public class CheckpointHandler {
 

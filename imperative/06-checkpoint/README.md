@@ -6,19 +6,24 @@ without losing events.
 ## What it does
 
 - `saveEveryN = 1` — writes the resume token after every handler success
-- `saveIntervalSeconds = 3` — heartbeat that advances the "last seen"
-  token even when no handler runs
+- `saveIntervalSeconds = 3` — write-coalescing flush for the "last seen"
+  token: a tick persists it only when the position moved (since
+  `stream-core 1.0.0-rc.4`)
+- `idleHeartbeatIntervalSeconds = 30` — the oplog-rollover protection for
+  *idle* streams (new in `stream-core 1.0.0-rc.4`, on by default at 300s):
+  when the cursor has delivered nothing for that long, a bounded server
+  probe certifies the interval empty and advances the persisted position
+  past the oplog's tail — an idle stream never loses its resume point.
+  Set `0` to opt out
 - `startPosition = RESUME` — on (re)start, pick up from the persisted
   token (3-level cascade documented in the lib Javadoc)
 - `onHistoryLost = RESUME_FROM_NOW` — pragmatic fallback if both tokens
   have rolled off the oplog (default would be `FAIL`)
-- `resumeStrategy = PROCESSED_FIRST` — the default (introduced in
-  `stream-core 1.0.0-rc.2`). Cascade starts from the last *processed*
-  token, giving strict at-least-once: in-flight events not yet
-  acknowledged at crash time are replayed. Switch to `SEEN_FIRST` for
-  fast restart on low-volume or heavily-filtered streams — cascade
-  then starts from the heartbeat-fresh seen token at the cost of
-  dropping in-flight events
+- Resume cascade is fixed since `stream-core 1.0.0-rc.4` (the
+  `resumeStrategy` attribute is gone): last *settled* processed token
+  first — strict at-least-once, in-flight events not yet settled at
+  crash time are replayed — then the certified seen position written
+  by the idle heartbeat, then `onHistoryLost`
 
 Tokens are stored in the `_fw_checkpoints` collection, keyed by stream
 name (here: `checkpoint-handler`).

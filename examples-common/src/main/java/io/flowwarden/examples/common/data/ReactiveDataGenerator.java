@@ -81,12 +81,21 @@ public class ReactiveDataGenerator {
     private void scheduleFlux(double ratePerSecond, java.util.function.Supplier<Mono<?>> op) {
         if (ratePerSecond <= 0) return;
         Duration period = Duration.ofNanos((long) (1_000_000_000.0 / ratePerSecond));
+        // onBackpressureDrop: when writes are slower than the tick rate (cold
+        // Mongo container under full-reactor load), interval would otherwise
+        // signal an OverflowException that bypasses the per-op onErrorResume
+        // and silently kills the whole subscription. Dropping ticks just
+        // lowers the effective rate; retry restarts the chain if anything
+        // still slips through — the generator must outlive transient faults.
         Disposable d = Flux.interval(Duration.ofMillis(500), period, Schedulers.parallel())
+                .onBackpressureDrop()
                 .flatMap(tick -> op.get().onErrorResume(e -> {
                     log.warn("data-generator op failed: {}", e.toString());
                     return Mono.empty();
                 }))
-                .subscribe();
+                .doOnError(e -> log.warn("data-generator flux terminated, retrying: {}", e.toString()))
+                .retry()
+                .subscribe(v -> { }, e -> log.error("data-generator flux died: {}", e.toString()));
         disposables.add(d);
     }
 

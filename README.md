@@ -44,7 +44,7 @@ flowwarden-examples/
 | `@OnError` | `03-error-handling` | available |
 | `@RetryPolicy` | `04-retry-policy` | available |
 | `@DeadLetterQueue`, `@MongoDlqOptions` | `05-dlq` | available |
-| `@Checkpoint`, `ResumeStrategy` | `06-checkpoint` | available |
+| `@Checkpoint` (dual-anchor resume) | `06-checkpoint` | available |
 | `@Pipeline` | `07-pipeline` | available |
 | `@Filter` | `08-filter` | available |
 | **every major annotation + dual-token divergence demo** | `09-full-stack` | available |

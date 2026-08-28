@@ -13,7 +13,6 @@ import io.flowwarden.examples.common.model.Order;
 import io.flowwarden.stream.ChangeStreamContext;
 import io.flowwarden.stream.FullDocumentMode;
 import io.flowwarden.stream.OnHistoryLost;
-import io.flowwarden.stream.ResumeStrategy;
 import io.flowwarden.stream.StartPosition;
 import io.flowwarden.stream.annotation.ChangeStream;
 import io.flowwarden.stream.annotation.Checkpoint;
@@ -75,8 +74,7 @@ import reactor.core.publisher.Mono;
         saveEveryN = 1,
         saveIntervalSeconds = 2,
         startPosition = StartPosition.RESUME,
-        onHistoryLost = OnHistoryLost.RESUME_FROM_NOW,
-        resumeStrategy = ResumeStrategy.PROCESSED_FIRST
+        onHistoryLost = OnHistoryLost.RESUME_FROM_NOW
 )
 public class FullStackHandler {
 

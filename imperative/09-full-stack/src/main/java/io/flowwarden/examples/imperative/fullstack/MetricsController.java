@@ -25,11 +25,12 @@ import org.springframework.web.bind.annotation.RestController;
  * visible at a glance without poking around {@code mongosh}.
  *
  * <p>The interesting field is {@code divergenceMillis}:
- * {@code lastSeenTimestamp - lastProcessedTimestamp}. A positive value
- * means {@code lastSeenToken} has advanced over events that
- * {@code lastProcessedToken} hasn't caught up with — which is exactly
- * what the dual-token model promises (and what a raw change stream
- * cannot give you).</p>
+ * {@code lastSeenTimestamp - lastProcessedTimestamp}. On a busy stream
+ * it goes negative and keeps growing: every settlement (including a
+ * {@code @Filter} rejection) advances the processed anchor, while the
+ * seen position is only rewritten by the idle heartbeat's certification
+ * — so the gap is a live view of how long the stream has been busy
+ * since its last idle window.</p>
  *
  * <p>The raw BSON resume tokens are also exposed for completeness, but
  * comparing them by eye is unhelpful — they're opaque {@code _data}

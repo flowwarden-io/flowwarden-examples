@@ -13,7 +13,6 @@ import io.flowwarden.examples.common.model.Order;
 import io.flowwarden.stream.ChangeStreamContext;
 import io.flowwarden.stream.FullDocumentMode;
 import io.flowwarden.stream.OnHistoryLost;
-import io.flowwarden.stream.ResumeStrategy;
 import io.flowwarden.stream.StartPosition;
 import io.flowwarden.stream.annotation.ChangeStream;
 import io.flowwarden.stream.annotation.Checkpoint;
@@ -71,7 +70,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
  *
  * <p>{@code @Checkpoint} persists both tokens to {@code _fw_checkpoints}
  * and drives the resume cascade on restart. {@code saveIntervalSeconds = 2}
- * is intentionally short so the divergence is visible within a few
+ * keeps the processed anchor's age visibly bounded within a few
  * seconds in the metrics endpoint.</p>
  *
  * <p><b>No {@code @OnDelete}:</b> the lib statically refuses
@@ -106,8 +105,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
         saveEveryN = 1,
         saveIntervalSeconds = 2,
         startPosition = StartPosition.RESUME,
-        onHistoryLost = OnHistoryLost.RESUME_FROM_NOW,
-        resumeStrategy = ResumeStrategy.PROCESSED_FIRST
+        onHistoryLost = OnHistoryLost.RESUME_FROM_NOW
 )
 public class FullStackHandler {
 

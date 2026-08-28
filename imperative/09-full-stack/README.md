@@ -52,7 +52,7 @@ MongoDB oplog
 - `@RetryPolicy(maxAttempts = 3, retryOn = TransientGatewayException.class, jitter = true)`
 - `@DeadLetterQueue(retentionDays = 14, includeStackTrace = true)`
 - `@MongoDlqOptions(collection = "orders-full-dlq")`
-- `@Checkpoint(saveEveryN = 1, saveIntervalSeconds = 2, startPosition = RESUME, resumeStrategy = PROCESSED_FIRST, ...)`
+- `@Checkpoint(saveEveryN = 1, saveIntervalSeconds = 2, startPosition = RESUME, ...)`
 
 `saveIntervalSeconds = 2` is intentionally short so the divergence is
 visible within a few seconds.
