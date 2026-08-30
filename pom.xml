@@ -23,7 +23,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <spring-boot.version>3.5.10</spring-boot.version>
-        <flowwarden.version>1.0.0-rc.4</flowwarden.version>
+        <flowwarden.version>1.0.0-rc.5</flowwarden.version>
         <flowwarden-javers.version>1.0.0-rc.2</flowwarden-javers.version>
         <javers.version>7.7.0</javers.version>
         <testcontainers.version>1.20.4</testcontainers.version>
