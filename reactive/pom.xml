@@ -25,5 +25,6 @@
         <module>08-filter</module>
         <module>09-full-stack</module>
         <module>10-transactions</module>
+        <module>12-registration</module>
     </modules>
 </project>

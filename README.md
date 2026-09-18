@@ -50,6 +50,7 @@ flowwarden-examples/
 | **every major annotation + dual-token divergence demo** | `09-full-stack` | available |
 | `TransactionInfo` — group events by `lsid`/`txnNumber` | `10-transactions` | available |
 | `@JaversStream`, `@OnInitial`, `@OnUpdate`, `@OnTerminal` (flowwarden-javers) | `11-javers` | available (imperative only) |
+| `StreamDefinitionContributor` / `StreamSpec` — annotation-free registration from YAML | `12-registration` | available |
 
 Each available sample exists in two flavours: `imperative/<name>` and
 `reactive/<name>`. Pick the one that matches your stack — they are
