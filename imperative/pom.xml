@@ -27,6 +27,7 @@
         <module>10-transactions</module>
         <module>11-javers</module>
         <module>12-registration</module>
+        <module>13-restart-policy</module>
     </modules>
 
     <build>
