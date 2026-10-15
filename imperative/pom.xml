@@ -28,4 +28,20 @@
         <module>11-javers</module>
         <module>12-registration</module>
     </modules>
+
+    <build>
+        <plugins>
+            <!-- Aggregator, not an application: keep a command-line `spring-boot:run`
+                 from failing here when -am pulls it into the reactor. Not inherited,
+                 the samples below run normally. -->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <inherited>false</inherited>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>

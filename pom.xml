@@ -118,5 +118,21 @@
                 </plugin>
             </plugins>
         </pluginManagement>
+        <plugins>
+            <!-- `./mvnw -pl <sample> -am spring-boot:run` puts this parent in the
+                 reactor; a goal invoked from the command line runs on every reactor
+                 module, and `run` fails on a module without a main class. Skip it
+                 here only (not inherited): the samples keep their own plugin
+                 declaration and run normally. Same block on examples-common and the
+                 two aggregators. -->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <inherited>false</inherited>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+        </plugins>
     </build>
 </project>
