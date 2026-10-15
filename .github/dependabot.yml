@@ -4,6 +4,15 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    ignore:
+      # The samples run on the Spring Boot 3.x line stream-core is guaranteed
+      # against; a Boot major is a deliberate migration, not a bump.
+      - dependency-name: "org.springframework.boot:*"
+        update-types: ["version-update:semver-major"]
+      # Testcontainers 2.x changes the API the smoke tests are written against;
+      # the move is a deliberate migration, aligned with the libraries.
+      - dependency-name: "org.testcontainers:*"
+        update-types: ["version-update:semver-major"]
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
