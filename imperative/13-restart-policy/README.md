@@ -44,7 +44,10 @@ accepts.
 
 `RestartObserver` is a minimal `StreamMetricsProvider` that logs the
 three signals of one restart cycle: `onStreamInvalidated`,
-`onStreamStopped(CRASHED)`, `onStreamRestarted(attempt)`.
+`onStreamStopped(CRASHED)`, `onStreamRestarted(attempt)`. The last one
+fires once the new cursor has proven itself alive (first event or
+heartbeat), not when the resubscription merely returned — that is also
+the moment the restart backoff resets.
 
 ## Run it
 
@@ -65,7 +68,8 @@ Watched collection invalidated for stream 'restart-handler' (cause: DROP)
 [restart] stream 'restart-handler' CRASHED — handed to the restart loop
 Stream 'restart-handler' checkpoint self-repaired after invalidate — ...
 Stream 'restart-handler' died at runtime — resubscription attempt 1 in 512ms
-Stream 'restart-handler' resubscribed after runtime death (attempt 1)
+Stream 'restart-handler' resubscribed after runtime death (attempt 1) — awaiting the cursor's proof of life
+Stream 'restart-handler' resubscribed after runtime death (attempt 1) — cursor alive
 [restart] stream 'restart-handler' resubscribed on attempt #1
 [restart] #23 ✓ order f9cbca42 (total=42.18)
 ```

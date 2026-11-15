@@ -22,7 +22,7 @@ import org.springframework.stereotype.Component;
  * <ol>
  *   <li>{@code onStreamInvalidated} — the drop reached the cursor;</li>
  *   <li>{@code onStreamStopped(CRASHED)} — the stream is dead, the loop owns it;</li>
- *   <li>{@code onStreamRestarted(attempt)} — resubscribed, with the attempt that succeeded.</li>
+ *   <li>{@code onStreamRestarted(attempt)} — the new cursor proved alive, with the attempt that succeeded.</li>
  * </ol>
  *
  * <p>A second {@code CRASHED} for the same death would mean the loop gave up

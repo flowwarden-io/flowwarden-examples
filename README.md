@@ -52,6 +52,7 @@ flowwarden-examples/
 | `@JaversStream`, `@OnInitial`, `@OnUpdate`, `@OnTerminal` (flowwarden-javers) | `11-javers` | available (imperative only) |
 | `StreamDefinitionContributor` / `StreamSpec` — annotation-free registration from YAML | `12-registration` | available |
 | `@RestartPolicy` — managed restart loop after a runtime cursor death | `13-restart-policy` | available (stream-core ≥ 1.0.0-rc.7) |
+| `@Reconcile` — reconcile a derived view over the lost window before a history-loss resume | `14-reconcile` | available (stream-core ≥ 1.0.0-rc.8) |
 
 Each available sample exists in two flavours: `imperative/<name>` and
 `reactive/<name>`. Pick the one that matches your stack — they are
@@ -67,6 +68,11 @@ POJO. Each sample brings exactly **one** Mongo starter:
 
 - `imperative/` → `spring-boot-starter-data-mongodb` → `MongoTemplate`
 - `reactive/` → `spring-boot-starter-data-mongodb-reactive` → `ReactiveMongoTemplate`
+
+Since stream-core `1.0.0-rc.8` the reactive auto-configuration builds
+every default bean (`CheckpointStore`, `LockService`, `DlqStore`) on the
+reactive driver, so the reactive samples carry no synchronous Mongo
+starter at all.
 
 The shared `DataGeneratorConfiguration` picks the right generator at
 context refresh based on which `MongoTemplate` bean is on the

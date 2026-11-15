@@ -23,15 +23,9 @@
             <artifactId>examples-common</artifactId>
         </dependency>
 
-        <!-- See imperative/02-typed-handlers/pom.xml: both Mongo starters
-             are required for stream-core 1.0.0-rc.1's reactive mode. -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-mongodb-reactive</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-mongodb</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>

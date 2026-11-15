@@ -27,6 +27,7 @@
         <module>10-transactions</module>
         <module>12-registration</module>
         <module>13-restart-policy</module>
+        <module>14-reconcile</module>
     </modules>
 
     <build>
